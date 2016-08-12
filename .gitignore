@@ -1,0 +1,4 @@
+chicken-git
+libgit2-core.*
+!libgit2-core.c
+*~
