@@ -1,4 +1,4 @@
-(require 'libgit2-core)
+(require 'libgit2-core nil t)
 
 (defun libgit2-status ()
   (interactive)
