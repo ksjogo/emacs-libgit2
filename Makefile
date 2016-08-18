@@ -1,4 +1,4 @@
-EMACSHEADERS = ../../emacs-25/src
+EMACSHEADERS = ../../../emacs-25/src
 CC      = gcc
 LD      = gcc
 CFLAGS  = -g -ggdb3 -Wall -fPIC
@@ -19,11 +19,8 @@ endif
 all: $(TARGET)
 
 # make shared library out of the object file
-%.so: %.o $(LIBGITFILES)
-	$(LD) -shared $(LDFLAGS) -o $@ $< $(LDLIBS)
-
-%.dll: %.o $(LIBGITFILES)
-	$(LD) -shared $(LDFLAGS) -o $@ $< $(LDLIBS)
+%.so %.dll: %.o $(LIBGITFILES)
+	$(LD) $(LDFLAGS) -o $@ $< $(LDLIBS)
 
 # compile source file to object file
 %.o: %.c
