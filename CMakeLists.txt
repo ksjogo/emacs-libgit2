@@ -1,0 +1,12 @@
+# CMake build script for emacs-libgit2
+
+PROJECT(emacs-libgit2 C)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+SET(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+SET(BUILD_CLAR FALSE)
+
+ADD_SUBDIRECTORY(libgit2)
+
+ADD_LIBRARY(git2-core SHARED libgit2-core.c)
+TARGET_LINK_LIBRARIES(git2-core git2)
