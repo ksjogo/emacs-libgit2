@@ -2,3 +2,4 @@
 	path = libgit2
 	url = https://github.com/libgit2/libgit2.git
 	branch = maint/v0.24
+	ignore = dirty
