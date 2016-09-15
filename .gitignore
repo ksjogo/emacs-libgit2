@@ -1,5 +1,2 @@
-chicken-git
-libgit2-core.*
-!libgit2-core.c
+*.cmake
 *~
-emacs-25.1.exe.stackdump
