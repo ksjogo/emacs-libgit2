@@ -1,0 +1,7 @@
+#+TITLE: Roadmap
+
+* TODO [#A] Document which magit functions needs optimization
+
+See: https://magit.vc/manual/magit/Performance.html
+
+* TODO [#B] Package for easy testing
