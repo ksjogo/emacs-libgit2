@@ -1,0 +1,37 @@
+language: c
+
+os:
+  - linux
+  - osx
+
+compiler:
+  - gcc
+  - clang
+
+addons:
+  apt:
+    packages:
+      - cmake
+      - libssh2-1-dev
+
+sudo: false
+
+env:
+  - EMACS_VERSION=25.1-rc2
+  - EMACS_VERSION=snapshot
+
+matrix:
+  allow_failures:
+    - os: osx
+    - compiler: clang
+    - env: EMACS_VERSION=snapshot
+
+before_install:
+  - export PATH="$HOME/bin:$PATH"
+  - curl -SOL https://github.com/flycheck/emacs-travis/raw/master/emacs-travis.mk
+  - make -f emacs-travis.mk install_emacs install_cask
+  - curl -SL https://github.com/emacs-mirror/emacs/raw/master/src/emacs-module.h --create-dirs -o include/emacs-module.h
+
+script:
+  - cmake .
+  - make
