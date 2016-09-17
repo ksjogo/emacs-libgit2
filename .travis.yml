@@ -17,7 +17,7 @@ addons:
 sudo: false
 
 env:
-  - EMACS_VERSION=25.1-rc2
+  - EMACS_VERSION=25.1
   - EMACS_VERSION=snapshot
 
 matrix:
