@@ -3,6 +3,7 @@
 Emacs integration of the libgit2 library.
 
 [![Build Status](https://travis-ci.org/ksjogo/emacs-libgit2.svg?branch=master)](https://travis-ci.org/ksjogo/emacs-libgit2)
+[![Coverage Status](https://coveralls.io/repos/github/ksjogo/emacs-libgit2/badge.svg)](https://coveralls.io/github/ksjogo/emacs-libgit2)
 
 ## Building
 
