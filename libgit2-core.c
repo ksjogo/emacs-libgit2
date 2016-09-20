@@ -40,9 +40,8 @@ static void provide (emacs_env *env, const char *feature)
 
 //FUNCS
 
-static emacs_value Fmymod_test (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
+static emacs_value Flibgit2_magic (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
-    git_libgit2_shutdown();
     return env->make_integer (env, 42);
 }
 
@@ -82,7 +81,7 @@ static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value
 
 #define DEFUN(lsym, csym, amin, amax, doc, data)  bind_function (env, lsym, env->make_function(env, amin, amax, csym, doc, data))
 
-        DEFUN("libgit2-test", Fmymod_test, 0, 0, "libgit2 test", NULL);
+        DEFUN("libgit2-magic", Flibgit2_magic, 0, 0, "libgit2 test", NULL);
         DEFUN("libgit2-core-status", Flibgit2_status, 1, 1, "libgit2 status test return branch", NULL);
 
 #undef DEFUN
