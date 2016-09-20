@@ -7,3 +7,4 @@ CMakeFiles
 *.dll
 /Makefile
 /include/emacs-module.h
+/.cask/
