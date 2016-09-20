@@ -10,8 +10,11 @@ compiler:
 
 addons:
   apt:
+    sources:
+      - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
     packages:
       - cmake
+      - cmake-data
       - libssh2-1-dev
 
 sudo: false
@@ -32,5 +35,6 @@ before_install:
   - make -f emacs-travis.mk install_emacs install_cask
 
 script:
+  - cmake --version
   - cmake .
   - make

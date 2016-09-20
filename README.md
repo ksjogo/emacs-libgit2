@@ -13,4 +13,4 @@ make
 ```
 
 ## Emacs Usage
-This directory needs to be placed inside a folder which is in emacs load-path. Then `(require 'libgit2)` as usual
+                 This directory needs to be placed inside a folder which is in emacs load-path. Then `(require 'libgit2)` as usual.
