@@ -38,3 +38,5 @@ script:
   - cmake --version
   - cmake .
   - make
+  - cask install
+  - cask exec ert-runner
