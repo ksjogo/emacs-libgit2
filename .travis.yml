@@ -30,7 +30,6 @@ before_install:
   - export PATH="$HOME/bin:$PATH"
   - curl -SOL https://github.com/flycheck/emacs-travis/raw/master/emacs-travis.mk
   - make -f emacs-travis.mk install_emacs install_cask
-  - curl -SL https://github.com/emacs-mirror/emacs/raw/master/src/emacs-module.h --create-dirs -o include/emacs-module.h
 
 script:
   - cmake .

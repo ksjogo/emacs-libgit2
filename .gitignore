@@ -1,2 +1,9 @@
 *.cmake
 *~
+CMakeCache.txt
+CMakeFiles
+*.dylib
+*.so
+*.dll
+/Makefile
+/include/emacs-module.h
