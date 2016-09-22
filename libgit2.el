@@ -11,7 +11,9 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'libgit2-core)
+(unless (require 'libgit2-core nil t)
+  (message "could not load compiled libgit2-core module!"))
+
 
 (defun libgit2-status ()
   (interactive)
