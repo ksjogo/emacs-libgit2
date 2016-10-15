@@ -38,13 +38,6 @@ static void provide (emacs_env *env, const char *feature)
 }
 
 
-/* HELPERS */
-
-static emacs_value Flibgit2_magic (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
-{
-    return env->make_integer (env, 42);
-}
-
 /* FUNCS */
 
 static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
@@ -86,7 +79,6 @@ int emacs_module_init (struct emacs_runtime *ert)
 #define DEFUN(lsym, csym, amin, amax, doc, data) \
     bind_function(env, lsym, env->make_function(env, amin, amax, csym, doc, data))
 
-    DEFUN("libgit2-magic", Flibgit2_magic, 0, 0, "libgit2 test", NULL);
     DEFUN("libgit2-core-status", Flibgit2_status, 1, 1,
           "libgit2 status test return branch", NULL);
 
