@@ -68,7 +68,7 @@ static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value
     }
 
     if (branch == NULL)
-        branch = "no-branch";
+        return env->intern(env, "no-branch");
 
     return env->make_string(env,branch,strlen(branch));
 }
