@@ -1,10 +1,10 @@
 # emacs-libgit2
 
-Emacs integration of the libgit2 library.
+Emacs integration of the [libgit2][libgit2-home] library.
 Requires `emacs-25` compiled after configured with `--with-modules`.
 
-[![Build Status](https://travis-ci.org/ksjogo/emacs-libgit2.svg?branch=master)](https://travis-ci.org/ksjogo/emacs-libgit2)
-[![Coverage Status](https://coveralls.io/repos/github/ksjogo/emacs-libgit2/badge.svg)](https://coveralls.io/github/ksjogo/emacs-libgit2)
+[![Build Status][travis-badge]][travis-link]
+[![Coverage Status][coverage-badge]][coverage-link]
 
 ## Building
 
@@ -15,4 +15,11 @@ make
 ```
 
 ## Emacs
-This directory needs to be placed inside a folder which is in emacs load-path. Then `(require 'libgit2)` as usual.
+This directory needs to be placed inside a folder which is in emacs
+`load-path`, then `(require 'libgit2)` as usual.
+
+[libgit2-home]: https://libgit2.github.com
+[travis-badge]: https://travis-ci.org/ksjogo/emacs-libgit2.svg?branch=master
+[travis-link]: https://travis-ci.org/ksjogo/emacs-libgit2
+[coverage-badge]: https://coveralls.io/repos/github/ksjogo/emacs-libgit2/badge.svg
+[coverage-link]: https://coveralls.io/github/ksjogo/emacs-libgit2
