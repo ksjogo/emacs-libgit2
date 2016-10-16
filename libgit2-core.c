@@ -42,6 +42,7 @@ static void provide (emacs_env *env, const char *feature)
 
 static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
+    /* args[0] := directory path */
     ptrdiff_t directory_size = 1000;
     char directory[directory_size];
     env->copy_string_contents(env, args[0], directory, &directory_size);
@@ -80,7 +81,9 @@ int emacs_module_init (struct emacs_runtime *ert)
     bind_function(env, lsym, env->make_function(env, amin, amax, csym, doc, data))
 
     DEFUN("libgit2-core-status", Flibgit2_status, 1, 1,
-          "libgit2 status test return branch", NULL);
+          "Return the current branch active of PATH."
+          "\n\nSee also `libgit2-status'."
+          "\n\n(fn PATH)", NULL);
 
 #undef DEFUN
 
