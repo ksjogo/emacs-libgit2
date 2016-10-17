@@ -2,17 +2,16 @@
 #include <emacs-module.h>
 #include <string.h>
 
-/* Declare mandatory GPL symbol.  */
+/* Declare mandatory GPL symbol. */
 int plugin_is_GPL_compatible;
 
-
-/* UTILS */
+/* Utils */
 
-/* Bind NAME to FUN.  */
+/* Bind NAME to FUN. */
 static void bind_function (emacs_env *env, const char *name, emacs_value Sfun)
 {
     /* Set the function cell of the symbol named NAME to SFUN using
-       the 'fset' function.  */
+       the 'fset' function. */
 
     /* Convert the strings to symbols by interning them */
     emacs_value Qfset = env->intern(env, "fset");
@@ -25,7 +24,7 @@ static void bind_function (emacs_env *env, const char *name, emacs_value Sfun)
     env->funcall(env, Qfset, 2, args);
 }
 
-/* Provide FEATURE to Emacs.  */
+/* Provide FEATURE to Emacs. */
 static void provide (emacs_env *env, const char *feature)
 {
     /* call 'provide' with FEATURE converted to a symbol */
@@ -37,8 +36,32 @@ static void provide (emacs_env *env, const char *feature)
     env->funcall(env, Qprovide, 1, args);
 }
 
-
-/* FUNCS */
+/* Init */
+
+static emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
+
+/* Initialize the module */
+int emacs_module_init (struct emacs_runtime *ert)
+{
+    emacs_env *env = ert->get_environment(ert);
+    git_libgit2_init();
+
+#define DEFUN(lsym, csym, amin, amax, doc, data) \
+    bind_function(env, lsym, env->make_function(env, amin, amax, csym, doc, data))
+
+    DEFUN("libgit2-core-current-branch", Flibgit2_current_branch, 1, 1,
+          "Return the current branch active of PATH."
+          "\n\nSee also `libgit2-status'."
+          "\n\n(fn PATH)", NULL);
+
+#undef DEFUN
+
+    provide(env, "libgit2-core");
+
+    return 0;
+}
+
+/* Implementation */
 
 static emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
@@ -67,27 +90,4 @@ static emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, ema
         return env->intern(env, "no-branch");
 
     return env->make_string(env, branch, strlen(branch));
-}
-
-
-/* INIT */
-
-int emacs_module_init (struct emacs_runtime *ert)
-{
-    emacs_env *env = ert->get_environment(ert);
-    git_libgit2_init();
-
-#define DEFUN(lsym, csym, amin, amax, doc, data) \
-    bind_function(env, lsym, env->make_function(env, amin, amax, csym, doc, data))
-
-    DEFUN("libgit2-core-current-branch", Flibgit2_current_branch, 1, 1,
-          "Return the current branch active of PATH."
-          "\n\nSee also `libgit2-status'."
-          "\n\n(fn PATH)", NULL);
-
-#undef DEFUN
-
-    provide(env, "libgit2-core");
-
-    return 0;
 }
