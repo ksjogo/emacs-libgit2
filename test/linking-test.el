@@ -1,3 +1,3 @@
-(ert-deftest libgit2/there-is-magic ()
+(ert-deftest libgit2/linked ()
   :tags '(general)
-  (should (eq 42 (libgit2-magic))))
+  (should (fboundp #'libgit2-core-status)))

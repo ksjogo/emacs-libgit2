@@ -5,7 +5,8 @@
 /* Declare mandatory GPL symbol.  */
 int plugin_is_GPL_compatible;
 
-//UTILS
+
+/* UTILS */
 
 /* Bind NAME to FUN.  */
 static void bind_function (emacs_env *env, const char *name, emacs_value Sfun)
@@ -14,14 +15,14 @@ static void bind_function (emacs_env *env, const char *name, emacs_value Sfun)
        the 'fset' function.  */
 
     /* Convert the strings to symbols by interning them */
-    emacs_value Qfset = env->intern (env, "fset");
-    emacs_value Qsym = env->intern (env, name);
+    emacs_value Qfset = env->intern(env, "fset");
+    emacs_value Qsym = env->intern(env, name);
 
     /* Prepare the arguments array */
     emacs_value args[] = { Qsym, Sfun };
 
     /* Make the call (2 == nb of arguments) */
-    env->funcall (env, Qfset, 2, args);
+    env->funcall(env, Qfset, 2, args);
 }
 
 /* Provide FEATURE to Emacs.  */
@@ -29,27 +30,21 @@ static void provide (emacs_env *env, const char *feature)
 {
     /* call 'provide' with FEATURE converted to a symbol */
 
-    emacs_value Qfeat = env->intern (env, feature);
-    emacs_value Qprovide = env->intern (env, "provide");
+    emacs_value Qfeat = env->intern(env, feature);
+    emacs_value Qprovide = env->intern(env, "provide");
     emacs_value args[] = { Qfeat };
 
-    env->funcall (env, Qprovide, 1, args);
+    env->funcall(env, Qprovide, 1, args);
 }
 
-//HELPERS
-
-//FUNCS
-
-static emacs_value Flibgit2_magic (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
-{
-    return env->make_integer (env, 42);
-}
+
+/* FUNCS */
 
 static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
     ptrdiff_t directory_size = 1000;
     char directory[directory_size];
-    env->copy_string_contents(env,args[0],directory,&directory_size);
+    env->copy_string_contents(env, args[0], directory, &directory_size);
 
     const char *branch = NULL;
 
@@ -70,23 +65,26 @@ static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value
     if (branch == NULL)
         return env->intern(env, "no-branch");
 
-    return env->make_string(env,branch,strlen(branch));
+    return env->make_string(env, branch, strlen(branch));
 }
-//INIT
 
-    int emacs_module_init (struct emacs_runtime *ert)
-    {
-        emacs_env *env = ert->get_environment (ert);
-        git_libgit2_init();
+
+/* INIT */
 
-#define DEFUN(lsym, csym, amin, amax, doc, data)  bind_function (env, lsym, env->make_function(env, amin, amax, csym, doc, data))
+int emacs_module_init (struct emacs_runtime *ert)
+{
+    emacs_env *env = ert->get_environment(ert);
+    git_libgit2_init();
 
-        DEFUN("libgit2-magic", Flibgit2_magic, 0, 0, "libgit2 test", NULL);
-        DEFUN("libgit2-core-status", Flibgit2_status, 1, 1, "libgit2 status test return branch", NULL);
+#define DEFUN(lsym, csym, amin, amax, doc, data) \
+    bind_function(env, lsym, env->make_function(env, amin, amax, csym, doc, data))
+
+    DEFUN("libgit2-core-status", Flibgit2_status, 1, 1,
+          "libgit2 status test return branch", NULL);
 
 #undef DEFUN
 
-        provide (env, "libgit2-core");
+    provide(env, "libgit2-core");
 
-        return 0;
-    }
+    return 0;
+}
