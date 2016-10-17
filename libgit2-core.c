@@ -129,6 +129,7 @@ static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value
     char directory[directory_size];
     env->copy_string_contents(env, args[0], directory, &directory_size);
 
+    size_t status_i = 0;
     git_repository *repo = NULL;
     git_repository_open_ext(&repo, directory, 0, NULL);
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
@@ -140,10 +141,10 @@ static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value
 
     emacs_value *status_values = malloc(sizeof(emacs_value) * count);
     emacs_value internal_status_values[3];
-    for (size_t i=0; i<count; ++i) {
-        const git_status_entry *entry = git_status_byindex(statuses, i);
-        status_values[i] = Fgit_status_entry(env, git_status_byindex(statuses, i));
-        pp(env, "this status value is %S", status_values[i]);
+    for (status_i = 0; status_i < count; ++status_i) {
+        const git_status_entry *entry = git_status_byindex(statuses, status_i);
+        status_values[status_i] = Fgit_status_entry(env, git_status_byindex(statuses, status_i));
+        pp(env, "this status value is %S", status_values[status_i]);
     }
     git_status_list_free(statuses);
 

@@ -38,7 +38,8 @@ static emacs_value Fgit_delta_t (emacs_env *env, const git_delta_t *payload)
 static emacs_value Fgit_oid (emacs_env *env, const git_oid *payload)
 {
     char buf[41];
-    for (int i = 0; i < 20; i++) {
+    int i = 0;
+    for (i = 0; i < 20; i++) {
         sprintf(buf + (i*2), "%02x", payload->id[i]);
     }
     /* This is a special case.  Even though git_oid is a struct (and
