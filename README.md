@@ -1,5 +1,7 @@
 # emacs-libgit2
 
+[![Join the chat at https://gitter.im/emacs-libgit2/Lobby](https://badges.gitter.im/emacs-libgit2/Lobby.svg)](https://gitter.im/emacs-libgit2/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Emacs integration of the [libgit2][libgit2-home] library.
 Requires `emacs-25` compiled after configured with `--with-modules`.
 
