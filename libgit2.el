@@ -16,7 +16,7 @@
 
 (defun libgit2-status ()
   (interactive)
-  (libgit2-core-status (expand-file-name ".")))
+  (libgit2-core-current-branch (expand-file-name ".")))
 
 (provide 'libgit2)
 ;;; libgit2.el ends here
