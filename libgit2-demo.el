@@ -6,6 +6,7 @@
 (require 'libgit2-core)
 (package-initialize)
 (require 'magit)
+(require 'pp)
 
 (defmacro time-it (form)
   "Time and report the duration of FORM."
@@ -13,8 +14,9 @@
          (fmt2 (concat fmt1 "done (%ss)")))
     `(prog2 (progn (message ,fmt1)
                    (setq *time-start* (current-time)))
-         ,form
-       (message ,fmt2 (time-to-seconds (time-subtract (current-time) *time-start*))))))
+         (let ((result ,form))
+           (message ,fmt2 (time-to-seconds (time-subtract (current-time) *time-start*)))
+           (message "Form evaluated to: %s" (pp-to-string result))))))
 
 (time-it (libgit2-core-status (expand-file-name ".")))
 
