@@ -43,3 +43,6 @@ script:
   - make
   - cask install
   - cask exec ert-runner
+
+after_success:
+  - emacs --script libgit2-demo.el
