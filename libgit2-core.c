@@ -129,7 +129,10 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
         return env->intern(env, "need-path");
 
     git_repository *repo = NULL;
-    git_repository_open_ext(&repo, directory, 0, NULL);
+    git_repository_open(&repo, directory);
+    if (repo == NULL)
+        return env->intern(env, "not-a-repository");
+
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     git_status_list *statuses = NULL;
     int error = git_status_list_new(&statuses, repo, &opts);
