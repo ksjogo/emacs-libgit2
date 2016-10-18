@@ -1,15 +1,12 @@
-#include <git2.h>
-#include <emacs-module.h>
-#include <string.h>
-#include <stdio.h>
+#include "libgit2-core.h"
 
 /* Declare mandatory GPL symbol. */
 int plugin_is_GPL_compatible;
 
-/* Utils */
+/* Utils */
 
 /* Bind NAME to FUN. */
-static void bind_function (emacs_env *env, const char *name, emacs_value Sfun)
+void bind_function (emacs_env *env, const char *name, emacs_value Sfun)
 {
     /* Set the function cell of the symbol named NAME to SFUN using
        the 'fset' function. */
@@ -26,7 +23,7 @@ static void bind_function (emacs_env *env, const char *name, emacs_value Sfun)
 }
 
 /* Provide FEATURE to Emacs. */
-static void provide (emacs_env *env, const char *feature)
+void provide (emacs_env *env, const char *feature)
 {
     /* call 'provide' with FEATURE converted to a symbol */
 
@@ -38,7 +35,7 @@ static void provide (emacs_env *env, const char *feature)
 }
 
 /* For debugging purposes. */
-static void message (emacs_env *env, const char *message)
+void message (emacs_env *env, const char *message)
 {
     emacs_value Qmessage = env->intern(env, "message");
     emacs_value args[] = { env->make_string(env, message, strlen(message)) };
@@ -46,7 +43,7 @@ static void message (emacs_env *env, const char *message)
 }
 
 /* For debugging purposes. */
-static void pp (emacs_env *env, const char *fmt, emacs_value payload)
+void pp (emacs_env *env, const char *fmt, emacs_value payload)
 {
     emacs_value Qpp = env->intern(env, "pp-to-string");
     emacs_value args[] = { payload };
@@ -55,10 +52,10 @@ static void pp (emacs_env *env, const char *fmt, emacs_value payload)
     env->funcall(env, env->intern(env, "message"), 2, args2);
 }
 
-/* Init */
+/* Init */
 
-static emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
-static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
+emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
+emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
 
 /* Initialize the module */
 int emacs_module_init (struct emacs_runtime *ert)
@@ -66,7 +63,7 @@ int emacs_module_init (struct emacs_runtime *ert)
     emacs_env *env = ert->get_environment(ert);
     git_libgit2_init();
 
-#define DEFUN(lsym, csym, amin, amax, doc, data) \
+#define DEFUN(lsym, csym, amin, amax, doc, data)                        \
     bind_function(env, lsym, env->make_function(env, amin, amax, csym, doc, data))
 
     DEFUN("libgit2-core-current-branch", Flibgit2_current_branch, 1, 1,
@@ -85,18 +82,17 @@ int emacs_module_init (struct emacs_runtime *ert)
     return 0;
 }
 
-/* Implementation */
+/* Implementation */
 
-/* If you could alter CMakeLists in such a way that this isn't
- * necessary, I'd be eternally grateful :) */
-#include "libgit2-core-convert-types.c"
-
-static emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
+emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
     /* args[0] := directory path */
     ptrdiff_t directory_size = 1000;
     char directory[directory_size];
     env->copy_string_contents(env, args[0], directory, &directory_size);
+
+    if (strlen(directory) == 0)
+        return env->intern(env, "need-path");
 
     const char *branch = NULL;
 
@@ -122,12 +118,15 @@ static emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, ema
 
 /* Retrieve the status of the repository.  Returns a plist or a hashmap -- something for fast access. */
 /* Right now returns a vector. */
-static emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
+emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
     /* args[0] := directory path for repository */
     ptrdiff_t directory_size = 1000;
     char directory[directory_size];
     env->copy_string_contents(env, args[0], directory, &directory_size);
+
+    if (strlen(directory) == 0)
+        return env->intern(env, "need-path");
 
     git_repository *repo = NULL;
     git_repository_open_ext(&repo, directory, 0, NULL);

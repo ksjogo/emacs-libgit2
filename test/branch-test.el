@@ -2,4 +2,4 @@
   :tags '(general)
   (should (stringp (libgit2-status)))
   (should (not (string-equal "" (libgit2-status))))
-  (should (eq 'no-branch (libgit2-core-status ""))))
+  (should (eq 'need-path (libgit2-core-status ""))))

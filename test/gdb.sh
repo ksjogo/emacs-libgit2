@@ -5,7 +5,7 @@ if [ ! -f "libgit2-core.so" ]; then
 fi
 
 if [ `hostname` = "guix" ]; then
-    gdb --args .emacs-25.2.50-real  -Q --load test/gdb-entry.el
-else
-    echo "unknown hostname, add your gdb setup here"
+    gdb --args emacs-25.2.50-real -Q --load test/gdb-entry.el
+elif [ `hostname` = "ody.local" ]; then
+    gdb --args emacs -Q --load test/gdb-entry.el
 fi

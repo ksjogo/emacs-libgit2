@@ -1,24 +1,11 @@
-#include <git2.h>
-#include <emacs-module.h>
-#include <stdio.h>
+#include "libgit2-core.h"
 
-/* Each function takes a single libgit2 type and converts it into an
- * emacs_value.  These conversions are shallow; do *not* optimize
- * these by flattening the vectors.  I have a feeling the consistency
- * will be well worth the verbosity.*/
-static emacs_value Fgit_status_t     (emacs_env *, const git_status_t *);
-static emacs_value Fgit_delta_t      (emacs_env *, const git_delta_t *);
-static emacs_value Fgit_diff_file    (emacs_env *, const git_diff_file *);
-static emacs_value Fgit_diff_delta   (emacs_env *, const git_diff_delta *);
-static emacs_value Fgit_status_entry (emacs_env *, const git_status_entry *);
-static emacs_value Fgit_oid          (emacs_env *, const git_oid *);
-
-static emacs_value Fgit_status_t (emacs_env *env, const git_status_t *payload)
+emacs_value Fgit_status_t (emacs_env *env, const git_status_t *payload)
 {
     return env->make_integer(env, *payload);
 }
 
-static emacs_value Fgit_delta_t (emacs_env *env, const git_delta_t *payload)
+emacs_value Fgit_delta_t (emacs_env *env, const git_delta_t *payload)
 {
     switch (*payload) {
     case GIT_DELTA_UNMODIFIED: return env->intern(env, "unmodified");
@@ -35,7 +22,7 @@ static emacs_value Fgit_delta_t (emacs_env *env, const git_delta_t *payload)
     }
 }
 
-static emacs_value Fgit_oid (emacs_env *env, const git_oid *payload)
+emacs_value Fgit_oid (emacs_env *env, const git_oid *payload)
 {
     char buf[41];
     for (int i = 0; i < 20; i++) {
@@ -49,7 +36,7 @@ static emacs_value Fgit_oid (emacs_env *env, const git_oid *payload)
     return env->make_string(env, buf, 40);
 }
 
-static emacs_value Fgit_diff_file (emacs_env *env, const git_diff_file *payload)
+emacs_value Fgit_diff_file (emacs_env *env, const git_diff_file *payload)
 {
     emacs_value Fvector = env->intern(env, "vector");
     emacs_value args[] = {
@@ -62,7 +49,7 @@ static emacs_value Fgit_diff_file (emacs_env *env, const git_diff_file *payload)
     return env->funcall(env, Fvector, 5, args);
 }
 
-static emacs_value Fgit_diff_delta (emacs_env *env, const git_diff_delta *payload)
+emacs_value Fgit_diff_delta (emacs_env *env, const git_diff_delta *payload)
 {
     emacs_value Fvector = env->intern(env, "vector");
     emacs_value args[] = {
@@ -77,7 +64,7 @@ static emacs_value Fgit_diff_delta (emacs_env *env, const git_diff_delta *payloa
     return env->funcall(env, Fvector, 7, args);
 }
 
-static emacs_value Fgit_status_entry (emacs_env *env, const git_status_entry *payload)
+emacs_value Fgit_status_entry (emacs_env *env, const git_status_entry *payload)
 {
     emacs_value args[] = {
         env->intern(env, "git-status-entry"),
