@@ -5,6 +5,7 @@
 (add-to-list 'load-path ".")
 (require 'libgit2-core)
 (package-initialize)
+(package-install 'magit)
 (require 'magit)
 (require 'pp)
 
