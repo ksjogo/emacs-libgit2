@@ -3,7 +3,7 @@
 /* Declare mandatory GPL symbol. */
 int plugin_is_GPL_compatible;
 
-/* Utils */
+/* Utils */
 
 /* Bind NAME to FUN. */
 void bind_function (emacs_env *env, const char *name, emacs_value Sfun)
@@ -52,7 +52,7 @@ void pp (emacs_env *env, const char *fmt, emacs_value payload)
     env->funcall(env, env->intern(env, "message"), 2, args2);
 }
 
-/* Init */
+/* Init */
 
 emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
 emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
@@ -82,7 +82,7 @@ int emacs_module_init (struct emacs_runtime *ert)
     return 0;
 }
 
-/* Implementation */
+/* Implementation */
 
 emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
