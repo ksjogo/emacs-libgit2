@@ -9,4 +9,5 @@
 (development
  (depends-on "ert")
  (depends-on "ert-runner")
+ (depends-on "magit")
  (depends-on "undercover"))
