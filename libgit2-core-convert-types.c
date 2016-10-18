@@ -24,16 +24,12 @@ emacs_value Fgit_delta_t (emacs_env *env, const git_delta_t *payload)
 
 emacs_value Fgit_oid (emacs_env *env, const git_oid *payload)
 {
-    char buf[41];
-    for (int i = 0; i < 20; i++) {
-        sprintf(buf + (i*2), "%02x", payload->id[i]);
-    }
     /* This is a special case.  Even though git_oid is a struct (and
      * thus should normally be cast as a vector), I'm confident it
      * exists only as a struct to hold a constant-size array of
      * values.  It should be safe to return these values as they
      * are. */
-    return env->make_string(env, buf, 40);
+    return env->make_string(env, git_oid_tostr_s(payload), 40);
 }
 
 emacs_value Fgit_diff_file (emacs_env *env, const git_diff_file *payload)
