@@ -145,7 +145,6 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
     for (size_t status_i = 0; status_i < count; ++status_i) {
         const git_status_entry *entry = git_status_byindex(statuses, status_i);
         status_values[status_i] = Fgit_status_entry(env, git_status_byindex(statuses, status_i));
-        pp(env, "this status value is %S", status_values[status_i]);
     }
     git_status_list_free(statuses);
 
