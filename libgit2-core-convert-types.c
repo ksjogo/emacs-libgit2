@@ -46,7 +46,16 @@ emacs_value Fgit_diff_file (emacs_env *env, const git_diff_file *payload)
 
 emacs_value Fgit_diff_delta (emacs_env *env, const git_diff_delta *payload)
 {
-    VECTOR(ret,
+    /* new file?
+     * we should probably report something, better than crashing though
+     */
+    if (payload == NULL) {
+        VECTOR(ret,
+               INTERN("git-diff-delta")
+            );
+        return ret;
+    } else {
+        VECTOR(ret,
            INTERN("git-diff-delta"),
            INTEGER(payload->flags),
            INTEGER(payload->nfiles),
@@ -55,7 +64,8 @@ emacs_value Fgit_diff_delta (emacs_env *env, const git_diff_delta *payload)
            Fgit_diff_file(env, &payload->old_file),
            Fgit_diff_file(env, &payload->new_file)
         );
-    return ret;
+        return ret;
+    }
 }
 
 emacs_value Fgit_status_entry (emacs_env *env, const git_status_entry *payload)
