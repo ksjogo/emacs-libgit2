@@ -51,6 +51,35 @@ void pp (emacs_env *env, const char *fmt, emacs_value payload)
     env->funcall(env, INTERN("message"), 2, args2);
 }
 
+int check_error(emacs_env *env, int error_code, const char *action)
+{
+    const git_error *error = giterr_last();
+    if (!error_code)
+        return error_code;
+    char *errmsg = (error && error->message) ? error->message : "???";
+    emacs_value Qlist = INTERN("list");
+    emacs_value errstring = STRING(errmsg);
+    emacs_value args[] = { STRING(action), errstring };
+    emacs_value exit_data = env->funcall(env, Qlist, 2, args);
+    emacs_value Qerror_sym = INTERN("libgit-error");
+    env->non_local_exit_signal(env, Qerror_sym, exit_data);
+    return error_code;
+}
+
+static char* retrieve_string(emacs_env *env, emacs_value str, ptrdiff_t *size)
+{
+   *size = 0;
+   env->copy_string_contents(env, str, NULL, size);
+   char *p = malloc(*size);
+   if (p == NULL) {
+       *size = 0;
+       return NULL;
+   }
+   env->copy_string_contents(env, str, p, size);
+
+   return p;
+}
+
 /* Init */
 
 emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
@@ -81,23 +110,19 @@ int emacs_module_init (struct emacs_runtime *ert)
     return 0;
 }
 
-#define CHECK_REPOSITORY(NAME) /* args[0] := directory path for repository */ \
-    ptrdiff_t directory_size = 1000;\
-    char directory[directory_size];\
-    env->copy_string_contents(env, args[0], directory, &directory_size);\
-    if (strlen(directory) == 0)\
-        return INTERN("need-path");\
-    git_repository *NAME = NULL;\
-    git_repository_open(&NAME, directory);\
-    if (NAME == NULL)\
-        return INTERN("not-a-repository");\
-
 /* Implementation */
 
 emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
-    CHECK_REPOSITORY(repo);
+    ptrdiff_t size;
+    char *directory = retrieve_string(env, args[0], &size);
 
+    git_repository *repo = NULL;
+    if (check_error(env, git_repository_open(&repo, directory), "no-repository")) {
+        if (directory != NULL)
+            free(directory);
+        return INTERN("nil");
+    }
     const char *branch = NULL;
     git_reference *head = NULL;
 
@@ -108,7 +133,8 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
         branch = git_reference_shorthand(head);
 
     git_reference_free(head);
-
+    if (directory != NULL)
+        free(directory);
     if (branch == NULL)
         return INTERN("no-branch");
 
@@ -119,8 +145,14 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
 /* Right now returns a vector. */
 emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
-    CHECK_REPOSITORY(repo);
-
+    ptrdiff_t size;
+    char *directory = retrieve_string(env, args[0], &size);
+    git_repository *repo = NULL;
+    if (check_error(env, git_repository_open(&repo, directory), "no-repository")) {
+        if (directory != NULL)
+            free(directory);
+        return INTERN("nil");
+    }
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     git_status_list *statuses = NULL;
     int error = git_status_list_new(&statuses, repo, &opts);
@@ -139,6 +171,8 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
 
     emacs_value Fvector = INTERN("vector");
     emacs_value ret = env->funcall(env, Fvector, count, status_values);
+    if (directory != NULL)
+        free(directory);
     free(status_values);
     return ret;
 }
