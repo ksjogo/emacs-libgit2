@@ -12,8 +12,8 @@ void bind_function (emacs_env *env, const char *name, emacs_value Sfun)
        the 'fset' function. */
 
     /* Convert the strings to symbols by interning them */
-    emacs_value Qfset = env->intern(env, "fset");
-    emacs_value Qsym = env->intern(env, name);
+    emacs_value Qfset = INTERN("fset");
+    emacs_value Qsym = INTERN(name);
 
     /* Prepare the arguments array */
     emacs_value args[] = { Qsym, Sfun };
@@ -27,8 +27,8 @@ void provide (emacs_env *env, const char *feature)
 {
     /* call 'provide' with FEATURE converted to a symbol */
 
-    emacs_value Qfeat = env->intern(env, feature);
-    emacs_value Qprovide = env->intern(env, "provide");
+    emacs_value Qfeat = INTERN(feature);
+    emacs_value Qprovide = INTERN("provide");
     emacs_value args[] = { Qfeat };
 
     env->funcall(env, Qprovide, 1, args);
@@ -37,19 +37,18 @@ void provide (emacs_env *env, const char *feature)
 /* For debugging purposes. */
 void message (emacs_env *env, const char *message)
 {
-    emacs_value Qmessage = env->intern(env, "message");
-    emacs_value args[] = { env->make_string(env, message, strlen(message)) };
+    emacs_value Qmessage = INTERN("message");
+    emacs_value args[] = { STRING(message) };
     env->funcall(env, Qmessage, 1, args);
 }
 
 /* For debugging purposes. */
 void pp (emacs_env *env, const char *fmt, emacs_value payload)
 {
-    emacs_value Qpp = env->intern(env, "pp-to-string");
+    emacs_value Qpp = INTERN("pp-to-string");
     emacs_value args[] = { payload };
-    emacs_value args2[] = { env->make_string(env, fmt, strlen(fmt)),
-                            env->funcall(env, Qpp, 1, args) };
-    env->funcall(env, env->intern(env, "message"), 2, args2);
+    emacs_value args2[] = { STRING(fmt), env->funcall(env, Qpp, 1, args) };
+    env->funcall(env, INTERN("message"), 2, args2);
 }
 
 /* Init */
@@ -92,7 +91,7 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
     env->copy_string_contents(env, args[0], directory, &directory_size);
 
     if (strlen(directory) == 0)
-        return env->intern(env, "need-path");
+        return INTERN("need-path");
 
     const char *branch = NULL;
 
@@ -111,9 +110,9 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
     }
 
     if (branch == NULL)
-        return env->intern(env, "no-branch");
+        return INTERN("no-branch");
 
-    return env->make_string(env, branch, strlen(branch));
+    return STRING(branch);
 }
 
 /* Retrieve the status of the repository.  Returns a plist or a hashmap -- something for fast access. */
@@ -126,19 +125,20 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
     env->copy_string_contents(env, args[0], directory, &directory_size);
 
     if (strlen(directory) == 0)
-        return env->intern(env, "need-path");
+        return INTERN("need-path");
 
     git_repository *repo = NULL;
     git_repository_open(&repo, directory);
     if (repo == NULL)
-        return env->intern(env, "not-a-repository");
+        return INTERN("not-a-repository");
 
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     git_status_list *statuses = NULL;
     int error = git_status_list_new(&statuses, repo, &opts);
 
     size_t count = git_status_list_entrycount(statuses);
-    if (count == 0) return NULL;
+    if (count == 0)
+        return NULL;
 
     emacs_value *status_values = malloc(sizeof(emacs_value) * count);
     emacs_value internal_status_values[3];
@@ -148,7 +148,7 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
     }
     git_status_list_free(statuses);
 
-    emacs_value Fvector = env->intern(env, "vector");
+    emacs_value Fvector = INTERN("vector");
     emacs_value ret = env->funcall(env, Fvector, count, status_values);
     free(status_values);
     return ret;
