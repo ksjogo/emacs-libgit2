@@ -67,7 +67,7 @@ int emacs_module_init (struct emacs_runtime *ert)
 
     DEFUN("libgit2-core-current-branch", Flibgit2_current_branch, 1, 1,
           "Return the current branch active of the repository at PATH."
-          "\n\nSee also `libgit2-status'."
+          "\n\nSee also `libgit2-current-branch'."
           "\n\n(fn PATH)", NULL);
     DEFUN("libgit2-core-status", Flibgit2_status, 1, 1,
           "Return the current status of the repository at PATH."
@@ -81,33 +81,33 @@ int emacs_module_init (struct emacs_runtime *ert)
     return 0;
 }
 
+#define CHECK_REPOSITORY(NAME) /* args[0] := directory path for repository */ \
+    ptrdiff_t directory_size = 1000;\
+    char directory[directory_size];\
+    env->copy_string_contents(env, args[0], directory, &directory_size);\
+    if (strlen(directory) == 0)\
+        return INTERN("need-path");\
+    git_repository *NAME = NULL;\
+    git_repository_open(&NAME, directory);\
+    if (NAME == NULL)\
+        return INTERN("not-a-repository");\
+
 /* Implementation */
 
 emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
-    /* args[0] := directory path */
-    ptrdiff_t directory_size = 1000;
-    char directory[directory_size];
-    env->copy_string_contents(env, args[0], directory, &directory_size);
-
-    if (strlen(directory) == 0)
-        return INTERN("need-path");
+    CHECK_REPOSITORY(repo);
 
     const char *branch = NULL;
+    git_reference *head = NULL;
 
-    git_repository *repo = NULL;
-    git_repository_open_ext(&repo, directory, 0, NULL);
+    int error = git_repository_head(&head, repo);
+    if (error == GIT_EUNBORNBRANCH || error == GIT_ENOTFOUND)
+        branch = NULL;
+    else if (!error)
+        branch = git_reference_shorthand(head);
 
-    if (repo != NULL) {
-        git_reference *head = NULL;
-        int error = git_repository_head(&head, repo);
-        if (error == GIT_EUNBORNBRANCH || error == GIT_ENOTFOUND)
-            branch = NULL;
-        else if (!error) {
-            branch = git_reference_shorthand(head);
-        }
-        git_reference_free(head);
-    }
+    git_reference_free(head);
 
     if (branch == NULL)
         return INTERN("no-branch");
@@ -119,18 +119,7 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
 /* Right now returns a vector. */
 emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
-    /* args[0] := directory path for repository */
-    ptrdiff_t directory_size = 1000;
-    char directory[directory_size];
-    env->copy_string_contents(env, args[0], directory, &directory_size);
-
-    if (strlen(directory) == 0)
-        return INTERN("need-path");
-
-    git_repository *repo = NULL;
-    git_repository_open(&repo, directory);
-    if (repo == NULL)
-        return INTERN("not-a-repository");
+    CHECK_REPOSITORY(repo);
 
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     git_status_list *statuses = NULL;
