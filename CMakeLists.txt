@@ -32,7 +32,11 @@ TARGET_LINK_LIBRARIES(git2-core c git2)
 if (COVERAGE)
   TARGET_COMPILE_OPTIONS(git2-core PUBLIC "-g" "-O0" "-fprofile-arcs" "-ftest-coverage")
   ADD_DEFINITIONS( -DCOVERAGE=${COVERAGE} )
-  TARGET_LINK_LIBRARIES(git2-core gcov)
+  IF(APPLE)
+    SET(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "-fprofile-arcs")
+  ELSE()
+    TARGET_LINK_LIBRARIES(git2-core gcov)
+  ENDIF()
 ENDIF()
 
 ADD_CUSTOM_COMMAND(
