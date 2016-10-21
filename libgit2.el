@@ -14,7 +14,7 @@
 (unless (require 'libgit2-core nil t)
   (message "could not load compiled libgit2-core module!"))
 
-(message default-directory)
+(define-error 'libgit2-error "libgit2-error")
 
 (defun libgit2-dir ()
   (expand-file-name default-directory))

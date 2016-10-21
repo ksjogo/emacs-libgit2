@@ -5,7 +5,7 @@
 
 (ert-deftest libgit2/signal-error ()
   :tags '(general error)
-  (should-error (libgit2-core-current-branch "") :type 'libgit-error))
+  (should-error (libgit2-core-current-branch "") :type 'libgit2-error))
 
 (ert-deftest libgit2/status ()
   :tags '(general)

@@ -71,7 +71,7 @@ int check_error(emacs_env *env, int error_code, const char *action)
     emacs_value errstring = STRING(errmsg);
     emacs_value args[] = { STRING(action), errstring };
     emacs_value exit_data = env->funcall(env, Qlist, 2, args);
-    emacs_value Qerror_sym = INTERN("libgit-error");
+    emacs_value Qerror_sym = INTERN("libgit2-error");
     env->non_local_exit_signal(env, Qerror_sym, exit_data);
     return error_code;
 }
