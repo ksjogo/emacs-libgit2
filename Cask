@@ -10,4 +10,4 @@
  (depends-on "ert")
  (depends-on "ert-runner")
  (depends-on "magit")
- (depends-on "undercover"))
+ (depends-on "undercover" :git "https://github.com/ksjogo/undercover.el.git" :branch "gcov"))

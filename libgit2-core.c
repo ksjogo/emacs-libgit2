@@ -42,6 +42,16 @@ void message (emacs_env *env, const char *message)
     env->funcall(env, Qmessage, 1, args);
 }
 
+#ifdef COVERAGE
+/* allow emacs to trigger the gcov flush, our undercover extension will use this */
+/* externally defined */
+void __gcov_flush();
+emacs_value Flibgit2_dump_gcov (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data) {
+    __gcov_flush();
+    return INTERN("flushed");
+}
+#endif
+
 /* For debugging purposes. */
 void pp (emacs_env *env, const char *fmt, emacs_value payload)
 {
@@ -64,6 +74,12 @@ int emacs_module_init (struct emacs_runtime *ert)
 
 #define DEFUN(lsym, csym, amin, amax, doc, data)                        \
     bind_function(env, lsym, env->make_function(env, amin, amax, csym, doc, data))
+
+#ifdef COVERAGE
+    DEFUN("libgit2-core-dump-gcov", Flibgit2_dump_gcov, 0, 0,
+          "Dump libgit2 gcov",
+          NULL);
+#endif
 
     DEFUN("libgit2-core-current-branch", Flibgit2_current_branch, 1, 1,
           "Return the current branch active of the repository at PATH."
