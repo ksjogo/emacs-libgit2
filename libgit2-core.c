@@ -47,8 +47,7 @@ void message (emacs_env *env, const char *message)
 /* externally defined */
 void __gcov_flush();
 emacs_value Flibgit2_dump_gcov (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data) {
-    __gcov_flush();
-    return INTERN("flushed");
+    __gcov_flush(); return INTERN("flushed");
 }
 #endif
 
