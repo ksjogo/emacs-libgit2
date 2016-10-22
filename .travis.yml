@@ -30,18 +30,18 @@ matrix:
   allow_failures:
     - os: osx
 #  - compiler: clang
-#    - env: EMACS_VERSION=snapshot
+#  - env: EMACS_VERSION=snapshot
 
 before_install:
   - export PATH="$HOME/bin:$PATH"
   - curl -SOL https://github.com/flycheck/emacs-travis/raw/master/emacs-travis.mk
   - make -f emacs-travis.mk install_emacs install_cask
+  - cask install
 
 script:
   - cmake --version
-  - cmake .
+  - cmake -DCOVERAGE=ON .
   - make
-  - cask install
   - cask exec ert-runner
 
 after_success:
