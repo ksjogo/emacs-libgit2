@@ -36,7 +36,6 @@ before_install:
   - export PATH="$HOME/bin:$PATH"
   - curl -SOL https://github.com/flycheck/emacs-travis/raw/master/emacs-travis.mk
   - make -f emacs-travis.mk install_emacs install_cask
-  - pip install --user cpp-coveralls
 
 script:
   - cmake --version
@@ -49,4 +48,3 @@ after_success:
   - touch murks1
   - git add murks1
   - cask exec emacs --script libgit2-demo.el
-  - coveralls -r CMakeFiles/git2-core.dir
