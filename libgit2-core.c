@@ -60,19 +60,14 @@ void pp (emacs_env *env, const char *fmt, emacs_value payload)
     env->funcall(env, INTERN("message"), 2, args2);
 }
 
-int check_error(emacs_env *env, int error_code, const char *action)
-{
+static void signal_giterr_last(emacs_env *env, const char *label) {
     const git_error *error = giterr_last();
-    if (!error_code)
-        return error_code;
     char *errmsg = (error && error->message) ? error->message : "???";
-    emacs_value Qlist = INTERN("list");
-    emacs_value errstring = STRING(errmsg);
-    emacs_value args[] = { STRING(action), errstring };
-    emacs_value exit_data = env->funcall(env, Qlist, 2, args);
+    emacs_value Flist = INTERN("list");
+    emacs_value args[] = {STRING(label), STRING(errmsg)};
+    emacs_value Qexit_data = env->funcall(env, Flist, 2, args);
     emacs_value Qerror_sym = INTERN("libgit2-error");
-    env->non_local_exit_signal(env, Qerror_sym, exit_data);
-    return error_code;
+    env->non_local_exit_signal(env, Qerror_sym, Qexit_data);
 }
 
 static char* retrieve_string(emacs_env *env, emacs_value str, ptrdiff_t *size)
@@ -132,10 +127,13 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
     ptrdiff_t size;
     char *directory = retrieve_string(env, args[0], &size);
 
+    if (directory == NULL)
+        return INTERN("nil");
     git_repository *repo = NULL;
-    if (check_error(env, git_repository_open(&repo, directory), "no-repository")) {
+    if (git_repository_open(&repo, directory) < 0) {
         if (directory != NULL)
             free(directory);
+        signal_giterr_last(env, "no-repository");
         return INTERN("nil");
     }
     const char *branch = NULL;
@@ -162,10 +160,13 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
 {
     ptrdiff_t size;
     char *directory = retrieve_string(env, args[0], &size);
+    if (directory == NULL)
+        return INTERN("nil");
     git_repository *repo = NULL;
-    if (check_error(env, git_repository_open(&repo, directory), "no-repository")) {
+    if (git_repository_open(&repo, directory) < 0) {
         if (directory != NULL)
             free(directory);
+        signal_giterr_last(env, "no-repository");
         return INTERN("nil");
     }
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
