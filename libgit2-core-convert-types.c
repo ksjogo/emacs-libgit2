@@ -8,17 +8,17 @@ emacs_value Fgit_status_t (emacs_env *env, const git_status_t *payload)
 emacs_value Fgit_delta_t (emacs_env *env, const git_delta_t *payload)
 {
     switch (*payload) {
-    case GIT_DELTA_UNMODIFIED: return INTERN("unmodified");
-    case GIT_DELTA_ADDED: return INTERN("added");
-    case GIT_DELTA_DELETED: return INTERN("deleted");
-    case GIT_DELTA_MODIFIED: return INTERN("modified");
-    case GIT_DELTA_RENAMED: return INTERN("renamed");
-    case GIT_DELTA_COPIED: return INTERN("copied");
-    case GIT_DELTA_IGNORED: return INTERN("ignored");
-    case GIT_DELTA_UNTRACKED: return INTERN("untracked");
-    case GIT_DELTA_TYPECHANGE: return INTERN("typechange");
-    case GIT_DELTA_UNREADABLE: return INTERN("unreadable");
-    case GIT_DELTA_CONFLICTED: return INTERN("conflicted");
+        case GIT_DELTA_UNMODIFIED: return INTERN("unmodified");
+        case GIT_DELTA_ADDED: return INTERN("added");
+        case GIT_DELTA_DELETED: return INTERN("deleted");
+        case GIT_DELTA_MODIFIED: return INTERN("modified");
+        case GIT_DELTA_RENAMED: return INTERN("renamed");
+        case GIT_DELTA_COPIED: return INTERN("copied");
+        case GIT_DELTA_IGNORED: return INTERN("ignored");
+        case GIT_DELTA_UNTRACKED: return INTERN("untracked");
+        case GIT_DELTA_TYPECHANGE: return INTERN("typechange");
+        case GIT_DELTA_UNREADABLE: return INTERN("unreadable");
+        case GIT_DELTA_CONFLICTED: return INTERN("conflicted");
     }
 }
 
@@ -56,14 +56,14 @@ emacs_value Fgit_diff_delta (emacs_env *env, const git_diff_delta *payload)
         return ret;
     } else {
         VECTOR(ret,
-           INTERN("git-diff-delta"),
-           INTEGER(payload->flags),
-           INTEGER(payload->nfiles),
-           INTEGER(payload->similarity),
-           Fgit_delta_t(env, &payload->status),
-           Fgit_diff_file(env, &payload->old_file),
-           Fgit_diff_file(env, &payload->new_file)
-        );
+               INTERN("git-diff-delta"),
+               INTEGER(payload->flags),
+               INTEGER(payload->nfiles),
+               INTEGER(payload->similarity),
+               Fgit_delta_t(env, &payload->status),
+               Fgit_diff_file(env, &payload->old_file),
+               Fgit_diff_file(env, &payload->new_file)
+            );
         return ret;
     }
 }
