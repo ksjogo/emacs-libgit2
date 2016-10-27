@@ -126,16 +126,15 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
 {
     ptrdiff_t size;
     char *directory = retrieve_string(env, args[0], &size);
-
     if (directory == NULL)
         return INTERN("nil");
     git_repository *repo = NULL;
     if (git_repository_open(&repo, directory) < 0) {
-        if (directory != NULL)
-            free(directory);
+        free(directory);
         signal_giterr_last(env, "no-repository");
         return INTERN("nil");
     }
+
     const char *branch = NULL;
     git_reference *head = NULL;
 
@@ -146,8 +145,8 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
         branch = git_reference_shorthand(head);
 
     git_reference_free(head);
-    if (directory != NULL)
-        free(directory);
+    free(directory);
+
     if (branch == NULL)
         return INTERN("no-branch");
 
@@ -164,11 +163,11 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
         return INTERN("nil");
     git_repository *repo = NULL;
     if (git_repository_open(&repo, directory) < 0) {
-        if (directory != NULL)
-            free(directory);
+        free(directory);
         signal_giterr_last(env, "no-repository");
         return INTERN("nil");
     }
+
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     git_status_list *statuses = NULL;
     int error = git_status_list_new(&statuses, repo, &opts);
@@ -187,8 +186,8 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
 
     emacs_value Fvector = INTERN("vector");
     emacs_value ret = env->funcall(env, Fvector, count, status_values);
-    if (directory != NULL)
-        free(directory);
+
+    free(directory);
     free(status_values);
     return ret;
 }
