@@ -9,7 +9,7 @@
 
 (ert-deftest libgit2/status ()
   :tags '(general)
-  (should (or (vectorp (libgit2-status)) (not (libgit2-status))))
+  (should (vectorp (libgit2-status)))
   (shell-command-to-string "touch testfile")
   (shell-command-to-string "git add testfile")
   (should (vectorp (libgit2-status))))
