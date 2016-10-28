@@ -8,3 +8,5 @@ CMakeFiles
 /Makefile
 /include/emacs-module.h
 /.cask/
+/coverage.json
+*.gcov

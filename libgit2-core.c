@@ -179,11 +179,8 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
 
     size_t count = git_status_list_entrycount(statuses);
     emacs_value *status_values = malloc(sizeof(emacs_value) * count);
-    emacs_value internal_status_values[3];
-    for (size_t status_i = 0; status_i < count; ++status_i) {
-        const git_status_entry *entry = git_status_byindex(statuses, status_i);
+    for (size_t status_i = 0; status_i < count; ++status_i)
         status_values[status_i] = Fgit_status_entry(env, git_status_byindex(statuses, status_i));
-    }
     git_status_list_free(statuses);
 
     emacs_value Fvector = INTERN("vector");
