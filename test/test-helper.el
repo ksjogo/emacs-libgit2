@@ -15,3 +15,4 @@
     (undercover "*.el" (:report-file (expand-file-name "./coverage.json")) (:send-report nil))))
 
 (require 'libgit2)
+(require 'libgit2-magit)

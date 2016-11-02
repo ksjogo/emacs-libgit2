@@ -23,6 +23,7 @@
   (interactive)
   (libgit2-core-current-branch (libgit2-dir)))
 
+;;;###autoload
 (defun libgit2-status ()
   (interactive)
   (libgit2-core-status (libgit2-dir)))
