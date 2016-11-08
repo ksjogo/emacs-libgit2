@@ -2,8 +2,7 @@
 
 (defun libgit2-gcov-collector ()
   (libgit2-core-dump-gcov)
-  (pp (shell-command-to-string "gcov -o CMakeFiles/git2-core.dir/ CMakeFiles/git2-core.dir/*.o"))
-  (pp (file-expand-wildcards "*.gcov"))
+  (message "%s" (shell-command-to-string "gcov -o CMakeFiles/git2-core.dir/ CMakeFiles/git2-core.dir/*.o"))
   (undercover-gcov-collector (file-expand-wildcards "*.gcov")))
 
 (when (require 'undercover nil t)
@@ -16,3 +15,15 @@
 
 (require 'libgit2)
 (require 'libgit2-magit)
+
+(defvar libgit2-testrepo (expand-file-name "./testrepo"))
+(when (file-exists-p libgit2-testrepo)
+  (delete-directory libgit2-testrepo t))
+(make-directory libgit2-testrepo)
+
+(let ((default-directory libgit2-testrepo))
+  (shell-command-to-string "git init")
+  (shell-command-to-string "git checkout -b testrepo")
+  (shell-command-to-string "touch initial")
+  (shell-command-to-string "git add initial")
+  (shell-command-to-string "git commit -m 'initial'"))

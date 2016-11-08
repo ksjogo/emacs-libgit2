@@ -42,9 +42,9 @@ script:
   - cmake --version
   - cmake -DCOVERAGE=ON .
   - make
+  - git config --global user.email "jogo@kronberger-spiele.de"
+  - git config --global user.name "ksjogo"
   - cask exec ert-runner
 
 after_success:
-  - touch murks1
-  - git add murks1
-  - cask exec emacs --script libgit2-demo.el
+ - cask exec emacs --script libgit2-demo.el

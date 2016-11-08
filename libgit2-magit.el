@@ -5,12 +5,9 @@
 ;;; Code:
 (require 'libgit2)
 
-(defun libgit2-magit-get-current-branch ()
-  (libgit2-core-current-branch (expand-file-name default-directory)))
-
 ;;;###autoload
 (defun libgit2-enable-magit-alias ()
-  (defalias 'magit-get-current-branch 'libgit2-magit-get-current-branch))
+  (defalias 'magit-get-current-branch 'libgit2-get-current-branch))
 
 (provide 'libgit2-magit)
 ;;; libgit2.el ends here
