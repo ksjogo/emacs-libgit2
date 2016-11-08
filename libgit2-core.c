@@ -102,7 +102,7 @@ git_repository* open_repository_from_arg_0(emacs_env *env, emacs_value args[])
 
 /* Init */
 
-emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
+emacs_value Flibgit2_get_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
 emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data);
 
 /* Initialize the module */
@@ -120,9 +120,9 @@ int emacs_module_init (struct emacs_runtime *ert)
           NULL);
 #endif
 
-    DEFUN("libgit2-core-current-branch", Flibgit2_current_branch, 1, 1,
+    DEFUN("libgit2-core-get-current-branch", Flibgit2_get_current_branch, 1, 1,
           "Return the current branch active of the repository at PATH."
-          "\n\nSee also `libgit2-current-branch'."
+          "\n\nSee also `libgit2-get-current-branch'."
           "\n\n(fn PATH)", NULL);
     DEFUN("libgit2-core-status", Flibgit2_status, 1, 1,
           "Return the current status of the repository at PATH."
@@ -138,11 +138,11 @@ int emacs_module_init (struct emacs_runtime *ert)
 
 /* Implementation */
 
-emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
+emacs_value Flibgit2_get_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
     git_repository *repo = NULL;
     if (!(repo = open_repository_from_arg_0(env, args)))
-        return INTERN("nil");
+        return NIL;
 
     const char *branch = NULL;
     git_reference *head = NULL;
@@ -150,8 +150,13 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
     switch(git_repository_head(&head, repo))
     {
         case GIT_OK:
-            branch = git_reference_shorthand(head);
+            if (git_reference_is_branch(head))
+                branch = git_reference_shorthand(head);
+            break;
         case GIT_EUNBORNBRANCH:
+            //FIXME: that's magit default behaviour for unborn?
+            branch = "master";
+            break;
         case GIT_ENOTFOUND:
         default:
             ;
@@ -159,10 +164,7 @@ emacs_value Flibgit2_current_branch (emacs_env *env, ptrdiff_t nargs, emacs_valu
 
     git_reference_free(head);
 
-    if (branch == NULL)
-        return INTERN("no-branch");
-
-    return STRING(branch);
+    return !branch ? NIL : STRING(branch);
 }
 
 /* Retrieve the status of the repository.  Returns a plist or a hashmap -- something for fast access. */
@@ -171,7 +173,7 @@ emacs_value Flibgit2_status (emacs_env *env, ptrdiff_t nargs, emacs_value args[]
 {
     git_repository *repo = NULL;
     if (!(repo = open_repository_from_arg_0(env, args)))
-        return INTERN("nil");
+        return NIL;
 
     git_status_options opts = GIT_STATUS_OPTIONS_INIT;
     git_status_list *statuses = NULL;

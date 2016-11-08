@@ -45,7 +45,7 @@ extern emacs_value Fgit_oid          (emacs_env *, const git_oid *);
 #define INTEGER(VALUE) env->make_integer(env, VALUE)
 #define STRING(VALUE) env->make_string(env, VALUE, strlen(VALUE))
 #define STRINGL(VALUE,LENGTH) env->make_string(env, VALUE, LENGTH)
-
+#define NIL INTERN("nil")
 #define VECTOR(name, ...)                                               \
     emacs_value name##_raw[] = {                                        \
         __VA_ARGS__                                                     \

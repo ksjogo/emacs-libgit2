@@ -19,15 +19,16 @@
            (message ,fmt2 (time-to-seconds (time-subtract (current-time) *time-start*)))
            (message "Form evaluated to: %s" (pp-to-string result))))))
 
-(time-it (libgit2-core-status (expand-file-name ".")))
+(let ((repo (expand-file-name "./testrepo")))
 
-(message
- "Benchmark L/C: %s"
- (let* ((fn (expand-file-name "."))
-        (c-times (car (benchmark-run 1000 (libgit2-core-current-branch fn))))
-        (l-times (car (benchmark-run 1000 (magit-get-current-branch)))))
-   (message "Benchmark C: %ss"    c-times)
-   (message "Benchmark Lisp: %ss" l-times)
-   (/ l-times c-times)))
+  (time-it (libgit2-core-status repo))
 
-(message "Demo complete!")
+  (message
+   "Benchmark L/C: %s"
+   (let ((c-times (car (benchmark-run 1000 (libgit2-core-get-current-branch repo))))
+         (l-times (car (benchmark-run 1000 (magit-get-current-branch)))))
+     (message "Benchmark C: %ss"    c-times)
+     (message "Benchmark Lisp: %ss" l-times)
+     (/ l-times c-times)))
+
+  (message "Demo complete!"))

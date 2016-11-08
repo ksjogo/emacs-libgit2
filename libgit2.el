@@ -19,9 +19,9 @@
 (defun libgit2-dir ()
   (expand-file-name default-directory))
 
-(defun libgit2-current-branch ()
+(defun libgit2-get-current-branch ()
   (interactive)
-  (libgit2-core-current-branch (libgit2-dir)))
+  (libgit2-core-get-current-branch (libgit2-dir)))
 
 ;;;###autoload
 (defun libgit2-status ()
